@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			
+			ul, li {
+				list-style: none;
+			}
+			
+			#box {
+				width: 500px;
+				height: 400px;
+				position: relative;
+			}
+			
+			#list {
+				width: 500px;
+				height: 300px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			
+			#list li {
+				width: 500px;
+				height: 300px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				opacity: 1;
+				filter: alpha(opacity=100);
+			}
+			
+			#list img {
+				width: 500px;
+				height: 300px;
+			}
+			
+			#list2 {
+				width: 500px;
+				height: 100px;
+				background: #999;
+				position: absolute;
+				left: 0;
+				top: 300px;
+			}
+			
+			#list2 li {
+				width: 100px;
+				height: 100px;
+				float: left;
+				opacity: 0.3;
+				filter: alpha(opacity=30);
+			}
+			
+			#list2 img {
+				width: 100px;
+				height: 100px;
+			}
+			
+			
+		</style>
+		<script src="move.js"></script>
+		<script>
+			
+			onload = function() {
+				
+				var oList = document.getElementById("list");
+				var aLi = oList.getElementsByTagName("li");
+				
+				var oList2 = document.getElementById("list2");
+				var aLi2 = oList2.getElementsByTagName("li");
+
+
+				//显示的图片下标
+				var i = 0;
+				
+				//先初始化 显示第一张图
+				for (var j=0; j<aLi.length; j++) {
+					if (j != i) {		
+						aLi[j].style.opacity = 0;
+						aLi[j].style.filter = "alpha(opacity=0)";					
+					}
+					else { //i == j
+						//把下面的按钮中的第i个, 显示成不透明
+						aLi2[j].style.opacity = 1;
+						aLi2[j].style.filter = "alpha(opacity=100)";	
+
+					}
+					
+				}
+				
+				//z轴索引, 层级
+				var zIndex = 1;
+				
+				//开启定时器
+				var timer = setInterval(move, 3000);
+				//以切换透明度来显示第i张图
+				function move() {
+					
+					i++; //显示下一张图
+					//如果i大于或者等于3(aLi.length), 应该将i设置为0
+					if (i >= aLi.length) {
+						i = 0;
+					}
+					
+					zIndex++
+					aLi[i].style.zIndex = zIndex;
+					
+					//切换
+					startMove(aLi[i], {opacity: 100}, hidden);
+					
+					//隐藏除了第i张图以外的图片
+					for (var j=0; j<aLi.length; j++) {
+						if (i != j) {
+							aLi[j].style.opacity = 0;
+							aLi[j].style.filter = "alpha(opacity=0)"; 
+						}
+					}
+					
+					for (var j=0; j<aLi2.length; j++) {
+						if (i == j) {
+							//变不透明
+							aLi2[j].style.opacity = 1;
+							aLi2[j].style.filter = "alpha(opacity=100)"; 
+						}
+						else {
+							//变透明
+							aLi2[j].style.opacity = 0.3;
+							aLi2[j].style.filter = "alpha(opacity=30)"; 
+						}
+					}
+				}
+				
+				function hidden(){
+					
+				}
+				
+				
+				//点击事件
+				for (var j=0; j<aLi2.length; j++) {
+					aLi2[j].index = j;
+					aLi2[j].onclick = function() {
+						
+						i = this.index - 1;
+						move();
+						clearInterval(timer)
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+				
+			}
+			
+		</script>
+		
+	</head>
+	<body>
+		<div id="box">
+			<ul id="list">
+				<li><img src="images/1.jpg" /></li>
+				<li><img src="images/2.jpg" /></li>
+				<li><img src="images/3.jpg" /></li>
+			</ul>
+			<ul id="list2">
+				<li><img src="images/1.jpg" /></li>
+				<li><img src="images/2.jpg" /></li>
+				<li><img src="images/3.jpg" /></li>
+			</ul>
+		</div>
+	</body>
+</html>

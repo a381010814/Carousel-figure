@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			
+			ul, li {
+				list-style: none;
+			}
+			
+			#box {
+				width: 800px;
+				height: 300px;
+				position: relative;
+				margin: 10px auto;
+				overflow: hidden;
+			}
+			
+			#list {
+				width: 600px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				
+			}
+			
+			#list li {
+				width: 600px;
+				height: 300px;
+				padding-left: 100px;
+			}
+			
+			#list img{
+				width: 600px;
+				height: 300px;
+			}
+			
+			
+		</style>
+		<script src="move.js"></script>
+		<script>
+			onload = function() {
+				
+				var oList = document.getElementById("list");
+				var aLi = oList.getElementsByTagName("li");
+				
+				oList.innerHTML += oList.innerHTML;
+				console.log(aLi.length); //6
+				
+				//li的高度
+				var iHeight = aLi[0].offsetHeight;
+				
+				var timer = null; //定时器自动轮滚
+				
+				var i = 0; //记录显示图片的下标
+				var iTop = 0; //这是oList和顶部的距离
+				
+				//每隔3秒调用一次
+				timer = setInterval(move, 3000);
+				//移动
+				function move(){ 
+					//清除原来的定时器
+					//clearInterval(timer);
+					
+					i++; //到下一张图
+					iTop = - i * iHeight; //这是目标值(移动到的位置)
+					
+					//以动画的方式移动
+					//oList: 需要移动的节点对象(ul)
+					//{top: iTop} : top(attr),iTop(iTarget)
+					//next: 回调函数
+					startMove(oList, {top: iTop}, next);
+				}
+				
+				//进入下一次移动
+				function next() {
+					//这里重新再执行move,在3秒后,赋值给timer保证只有一个定时器
+					//timer = setInterval(move, 3000);
+					
+					//当移动到第4张图(和第一张图一样)时, 让oList.style.top = 0
+					if (i >= aLi.length/2) {
+						//瞬间回到起始位置, 让用户看不到差别
+						oList.style.top = 0;
+						i = 0; //把i初始化为0
+					}
+					
+				}
+				
+			}
+		</script>
+	</head>
+	<body>
+		<div id="box">
+			<ul id="list">
+				<li style="background: yellow;"><img src="images/1.jpg" /></li>
+				<li style="background: blue;"><img src="images/2.jpg" /></li>
+				<li style="background: pink;"><img src="images/3.jpg" /></li>
+			</ul>
+		</div>
+	</body>
+</html>

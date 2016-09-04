@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			
+			ul, li {
+				list-style: none;
+			}
+			
+			#box {
+				width: 600px;
+				height: 300px;
+				position: relative;
+				overflow: hidden;
+				margin: 10px auto;
+			}
+			
+			#list {
+				height: 300px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			
+			#list li {
+				width: 600px;
+				height: 300px;
+				float: left;
+			}
+			
+			#list img {
+				width: 600px;
+				height: 300px;
+			}
+			
+			#list2 {
+				width: 70px;
+				height: 15px;
+				position: absolute;
+				right: 20px;
+				bottom: 20px;
+			}
+			
+			#list2 li {
+				width: 15px;
+				height: 15px;
+				background: yellow;
+				border: 1px solid black;
+				float: left;
+				margin-left: 5px;
+				text-align: center;
+				line-height: 15px;
+				cursor: pointer;
+			}
+			
+		</style>
+		<script src="move.js"></script>
+		<script>
+			onload = function() {
+				
+				var oList = document.getElementById("list");
+				var aLi = oList.getElementsByTagName("li");
+				
+				var oList2 = document.getElementById("list2");
+				var aLi2 = oList2.getElementsByTagName("li");
+				
+				//复制一份oList.innerHTML
+				oList.innerHTML += oList.innerHTML;
+				
+				//获取li的宽度
+				var iWidth = aLi[0].offsetWidth;
+				
+				//改变width
+				oList.style.width = aLi.length * iWidth + "px";
+				
+				var i = 0; //图片下标
+				var iLeft = 0; //需要到达的目标值
+				
+				//开启定时器
+				var timer = setInterval(move, 3000);
+				var isMoving = false; //是否正在移动
+				
+				//开始移动
+				function move() {
+					
+					isMoving = true; //正在移动..
+					
+					i++; //设置需要移动到的图片下标
+					iLeft = -i * iWidth; //移动到的目标值
+					
+					//开始运动
+					startMove(oList, {left: iLeft}, next);
+					
+					//更新按钮的背景颜色
+					for (var j=0; j<aLi2.length; j++){
+						if (j == i) {
+							aLi2[j].style.background = "red";
+						}
+						else {
+							aLi2[j].style.background = "yellow";
+						}
+					}
+					//如果是第四张图
+					if (i == aLi.length/2) {
+						aLi2[0].style.background = "red";
+					}
+				}
+				
+				function next(){
+					
+					isMoving = false; //移动结束了
+					
+					//当移动到了第四张图时(i==3)
+					if (i >= aLi.length/2) {
+						i = 0; //重新初始化i为0
+						oList.style.left = 0; //瞬间将olist移动,显示第一张图
+					}
+				}
+				
+				
+				//添加按钮的点击事件
+				for (var j=0; j<aLi2.length; j++) {
+					aLi2[j].index = j;
+					aLi2[j].onclick = function(){
+						i = this.index - 1;
+						move(); //移动到第i张图片的位置
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+				
+				
+				//上一页,下一页
+				var prePage = document.getElementById("prePage"); 
+				var nextPage = document.getElementById("nextPage");  
+				
+				//上一页
+				prePage.onclick = function() {
+					
+					if (!isMoving) {
+						//在不移动时可以进入if
+						if (i == 0) {
+							//将oList瞬间移动到第四张图的位置
+							oList.style.left = aLi.length/2 * iWidth * (-1) + "px";
+							i = aLi.length/2 - 2; 
+						}
+						else {
+							i = i - 2; 
+						}
+						move(); //移动到第i张图片的位置
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+				//下一页
+				nextPage.onclick = function() {
+					if (!isMoving) {
+						move(); //移动到第i张图片的位置
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+			}
+		</script>
+		
+	</head>
+	<body>
+		<div id="box">
+			<ul id="list">
+				<li><img src="images/1.jpg" /></li>
+				<li><img src="images/2.jpg" /></li>
+				<li><img src="images/3.jpg" /></li>
+			</ul>
+			<ul id="list2">
+				<li style="background: red;">1</li>
+				<li>2</li>
+				<li>3</li>
+			</ul>
+		</div>
+		<a href="#" id="prePage">上一页</a> <a href="#" id="nextPage">下一页</a> 
+		
+	</body>
+</html>

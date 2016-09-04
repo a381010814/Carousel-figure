@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			ul, li {
+				list-style: none;
+			}
+			
+			#box {
+				width: 800px;
+				height: 300px;
+				position: relative;
+				overflow: hidden;
+				margin: 10px auto;
+			}
+			
+			#list {
+				width: 600px;
+				position:absolute;
+				left: 0px;
+				top: 0;
+			}
+			
+			#list li {
+				width: 600px;
+				height: 300px;
+			}
+			#list img {
+				width: 600px;
+				height: 300px;
+			}
+			
+			#list2 {
+				width: 200px;
+				height: 300px;
+				position: absolute;
+				left: 600px;
+				top: 0;
+			}
+			
+			#list2 li {
+				width: 200px;
+				height: 100px;
+				background: yellow;
+				line-height: 100px;
+				text-align: center;
+				font-size: 20px;
+			}
+		</style>
+		<script src="move.js"></script>
+		<script>
+			onload = function() {
+				var oList = document.getElementById("list");
+				var aLi = oList.getElementsByTagName("li");
+				
+				var oList2 = document.getElementById("list2"); 
+				var aLi2 = oList2.getElementsByTagName("li");
+				
+				//复制一份oList.innerHTML
+				oList.innerHTML += oList.innerHTML;
+				
+				//得到li的高度
+				var iHeight = aLi[0].offsetHeight;
+				
+				//显示的图片下标
+				var i = 0; 
+				
+				//oList和顶部的距离
+				var iTop = 0;
+				
+				//定时器
+				var timer = setInterval(move, 3000);
+				var isMoving = false; //控制是否正在移动
+				
+				//移动, 开始轮滚
+				function move() {
+					
+					//现在正在移动...
+					isMoving = true;
+					
+					//移动到第i个,这里i会加1
+					i++;
+					//得到目标值iTop
+					iTop = -i * iHeight;
+					
+					//开始运动
+					startMove(oList, {top: iTop}, next);
+					
+					//改变按钮的颜色
+					for (var j=0; j<aLi2.length; j++) {
+						if (j == i) {
+							aLi2[j].style.background = "red"; 
+						}
+						else {
+							aLi2[j].style.background = "yellow"; 
+						}
+					}
+					//如果i是3时,把
+					if (i == aLi.length/2) {
+						aLi2[0].style.background = "red";
+					}
+					
+				}
+				
+				function next() {
+					isMoving = false; //移动结束了
+					
+					if (i >= aLi.length/2) {
+						i = 0; //把i初始化为0
+						oList.style.top = 0; //把olist(ul)放在最开始的位置
+					}
+				}
+				
+				//给按钮添加点击事件
+				for (var j=0; j<aLi2.length; j++) {
+					//点击事件
+					aLi2[j].index = j;
+					aLi2[j].onclick = function() {
+						i = this.index - 1; //这里要-1, 因为在move函数中i++了
+						move(); //调用move, 让oList移动
+						
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+				
+				//上一页, 下一页
+				var prePage = document.getElementById("prePage");
+				var nextPage = document.getElementById("nextPage"); 
+				
+				//上一页
+				prePage.onclick = function(){
+					//在没有移动时, 进入上一页
+					if (!isMoving) {
+						if (i == 0) {
+							//当是第一张图(i==0)时, 这时,我们将oList的位置瞬间移动到第四张图(i==3)
+							//i的值应该变成: aLi.length/2-2
+							i = aLi.length/2 - 2;
+							oList.style.top = aLi.length/2 * iHeight * (-1) + "px";
+						}
+						else {
+							i = i - 2; //这里要将i减2,因为在move函数中将i++了
+						}
+						move(); //调用move, 让oList移动
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				//下一页
+				nextPage.onclick = function() {
+					//在没有移动时,可以进入下一页
+					if (!isMoving) {
+						move(); //进入下一页
+						
+						clearInterval(timer);
+						timer = setInterval(move, 3000);
+					}
+				}
+				
+			}
+			
+		</script>
+		
+	</head>
+	<body>
+		<div id="box">
+			<ul id="list">
+				<li><img src="images/1.jpg" /></li>
+				<li><img src="images/2.jpg" /></li>
+				<li><img src="images/3.jpg" /></li>
+			</ul>
+			<ul id="list2">
+				<li style="background: red;">1</li>
+				<li>2</li>
+				<li>3</li>
+			</ul>
+		</div>
+		<a href="#" id="prePage">上一页</a> <a href="#" id="nextPage">下一页</a> 
+		
+	</body>
+</html>
